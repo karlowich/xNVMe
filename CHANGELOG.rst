@@ -19,6 +19,23 @@ Known Issues
 
 See the file named ``ISSUES`` in the root of the repository.
 
+v0.0.26
+-------
+
+Mostly fixes and third-party updates.
+
+* Third-party
+  - fio, updated to 3.27
+  - spdk, updated to v21.10
+
+* uring_cmd
+  - Experimental interface updated for patch-set on top of 5.15 kernel
+
+* Fixes
+  - Linux Block Backend: fix and update sysfs processing
+  - fio io-engine: Fix of xnvme_fioe_reset_wp() resetting one too many zones
+  - Adjustments to CI and partly removed of deprecated 'schemes'
+
 v0.0.25
 -------
 
