@@ -1,0 +1,12 @@
+# packages list
+choco
+msys2
+cmake
+make
+mingw-w64-x86_64-toolchain
+mingw-w64-x86_64-clang
+mingw-w64-x86_64-nsis
+
+# Run Windows command-prompt as Administrator
+> cd scripts\pkgs
+> windows-2019.bat
