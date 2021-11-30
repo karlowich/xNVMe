@@ -3,6 +3,12 @@ name: windows-build-test
 on:
   pull_request:
   push:
+    branches:
+      - master
+      - dev
+      - build_test
+    tags:
+      - v*
 
 defaults:
   run:
