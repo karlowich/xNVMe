@@ -25,9 +25,5 @@ main(int argc, char *argv[])
 {
 	struct xnvme_opts opts = xnvme_opts_default();
 
-	// Enumerate the local or remote system
-	// invoking the callback for each discovered device
-	xnvme_enumerate(argc > 1 ? argv[1] : NULL, &opts, enum_cb, NULL);
-
-	return 0;
+	return xnvme_enumerate(argc > 1 ? argv[1] : NULL, &opts, enum_cb, NULL);
 }
