@@ -183,11 +183,6 @@ static struct xnvme_be_mixin g_xnvme_be_mixin_windows[] = {
 };
 #endif
 
-static const char *g_schemes[] = {
-	"file",
-	"dev"
-};
-
 struct xnvme_be xnvme_be_windows = {
 	.mem = XNVME_BE_NOSYS_MEM,
 	.admin = XNVME_BE_NOSYS_ADMIN,
@@ -196,8 +191,6 @@ struct xnvme_be xnvme_be_windows = {
 	.dev = XNVME_BE_NOSYS_DEV,
 	.attr = {
 		.name = "windows",
-		.schemes = g_schemes,
-		.nschemes = sizeof g_schemes / sizeof(*g_schemes),
 #ifdef XNVME_BE_WINDOWS_ENABLED
 		.enabled = 1,
 #endif
