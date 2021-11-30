@@ -29,8 +29,10 @@ main(int argc, char *argv[])
 
 	switch (argc) {
 	case 2:
-		opts.nsid = argc > 2 ? atoi(argv[1]) : 1;
+		opts.nsid = atoi(argv[1]);
+		break;
 	case 1:
+		opts.nsid = 1;
 		break;
 	default:
 		return 1;
