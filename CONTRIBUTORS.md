@@ -10,7 +10,9 @@ Contributors to the current release
 * Ankit Kumar, [Samsung]
 * Michael Bang, [Samsung]
 * Pierre Labat, [Micron]
+* Rishabh Shukla, [Samsung]
 * Simon A. F. Lund, [Samsung]
+* Vikash Kumar, [Samsung]
 
 Contributors to previous releases
 ---------------------------------
