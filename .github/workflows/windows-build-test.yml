@@ -106,6 +106,7 @@ jobs:
         set "PATH=%SystemDrive%\tools\msys64;!PATH!"
         set "PATH=%ProgramFiles%\LLVM\bin;!PATH!"
 
+        cd xnvme
         %SH% -c "make install"
 
     - name: Execute xnvme commands
