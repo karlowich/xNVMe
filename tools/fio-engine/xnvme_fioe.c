@@ -72,13 +72,13 @@
  */
 #include <stdlib.h>
 #include <assert.h>
-#include <fio.h>
-#include <zbd_types.h>
-#include <optgroup.h>
 #include <libxnvme.h>
 #include <libxnvme_3p.h>
 #include <libxnvme_nvm.h>
 #include <libxnvme_znd.h>
+#include "fio.h"
+#include "zbd_types.h"
+#include "optgroup.h"
 
 static pthread_mutex_t g_serialize = PTHREAD_MUTEX_INITIALIZER;
 
@@ -125,7 +125,8 @@ struct xnvme_fioe_data {
 };
 XNVME_STATIC_ASSERT(sizeof(struct xnvme_fioe_data) == 64, "Incorrect size")
 
-#ifdef WIN32
+#ifndef log_err
+//#ifdef WIN32
 ssize_t log_err(const char* format, ...)
 {
 	char buffer[1024];
@@ -411,7 +412,7 @@ xnvme_fioe_init(struct thread_data *td)
 	if (!td->io_ops) {
 		log_err("xnvme_fioe: init(): !td->io_ops\n");
 		log_err("xnvme_fioe: init(): Check fio version\n");
-#ifndef WIN32
+#ifdef fio_version_string
 		log_err("xnvme_fioe: init(): I/O engine running with: '%s'\n",
 			fio_version_string);
 #endif
