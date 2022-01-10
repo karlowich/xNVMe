@@ -1,15 +1,14 @@
 #
-# xNVMe uses CMake, however, to provide the conventional practice of:
+# xNVMe uses meson, however, to provide the conventional practice of:
 #
 # ./configure
 # make
 # make install
 #
 # The initial targets of this Makefile supports the behavior, instrumenting
-# CMake based on the options passed to "./configure"
-#
-# Additional targets come after these which modify CMAKE build-options and other
-# common practices associated with xNVMe development
+# meson based on the options passed to "./configure". However, to do proper configuration then
+# actually use meson, this is just here to get one started, showing some default usage of meson and
+# providing pointers to where to read about meson.
 #
 ifeq ($(PLATFORM_ID),Windows)
 else
@@ -35,6 +34,13 @@ MAKE = $$( \
 		( * ) echo Unrecognized ;; \
 	esac)
 
+MESON = $$( \
+	case $(PLATFORM_ID) in \
+		( Linux | Windows) echo "meson" ;; \
+		( FreeBSD | OpenBSD | NetBSD ) echo "meson" ;; \
+		( * ) echo Unrecognized ;; \
+	esac)
+
 NPROC = $$( \
 	case $(PLATFORM_ID) in \
 		( Linux | Windows) nproc ;; \
@@ -50,7 +56,7 @@ GIT = $$( \
 	esac)
 
 # TODO: fix this
-BUILD_DIR?=build
+BUILD_DIR?=builddir
 
 .PHONY: default
 default: info tags git-setup
@@ -98,15 +104,12 @@ build: info
 		echo "";					\
 		false;						\
 	fi
-	cd $(BUILD_DIR) && ${MAKE}
-	@if [ -f "$(BUILD_DIR)/build_deb" ]; then	\
-		cd $(BUILD_DIR) && ${MAKE} package;	\
-	fi
+	cd $(BUILD_DIR) && ${MESON} compile
 
 .PHONY: install
 install:
 	@echo "## xNVMe: make install"
-	cd $(BUILD_DIR) && ${MAKE} install
+	cd $(BUILD_DIR) && ${MESON} install
 
 #
 # The binary DEB packages generated here are not meant to be used for anything
@@ -134,7 +137,6 @@ uninstall-deb:
 clean:
 	@echo "## xNVMe: make clean"
 	rm -fr $(BUILD_DIR) || true
-	rm -fr cmake-build-debug || true
 
 #
 # Helper-target generating third-party strings
@@ -150,32 +152,37 @@ gen-3p-ver:
 .PHONY: gen-src-archive
 gen-src-archive:
 	@echo "## xNVMe: make gen-src-archive"
-	./scripts/xnvme_gen_src_archive.sh
+	cd $(BUILD_DIR) && meson dist --include-subprojects --no-tests --formats zip
+	python3 ./scripts/dist_zip_inject.py --archive $(BUILD_DIR)/meson-dist/*.zip --files subprojects/packagefiles
+	#cd $(BUILD_DIR)/meson-dist/ && for zf in *.zip; do sha256sum ${zf} > "${zf}.sha256sum"; done
+	@echo "## Here: "
+	find $(BUILD_DIR)/meson-dist
+	@echo "## xNVMe: make gen-src-archive [DONE]"
 
 #
 # Helper-target to produce Bash-completions for tools (tools, examples, tests)
 #
 # NOTE: This target requires a bunch of things: binaries must be built and
-# residing in 'build/tools' etc. AND installed on the system. Also, the find
+# residing in 'builddir/tools' etc. AND installed on the system. Also, the find
 # command has only been tried with GNU find
 #
 .PHONY: gen-bash-completions
 gen-bash-completions:
 	@echo "## xNVMe: make gen-bash-completions"
-	$(eval TOOLS := $(shell find build/tools build/examples build/tests -not -name "xnvme_single*" -not -name "xnvme_enum" -not -name "xnvme_dev" -not -name "*.so" -type f -executable -exec basename {} \;))
+	$(eval TOOLS := $(shell find builddir/tools builddir/examples builddir/tests -not -name "xnvme_single*" -not -name "xnvme_enum" -not -name "xnvme_dev" -not -name "*.so" -type f -executable -exec basename {} \;))
 	python3 ./scripts/xnvmec_generator.py cpl --tools ${TOOLS} --output scripts/bash_completion.d
 
 #
 # Helper-target to produce man pages for tools (tools, examples, tests)
 #
 # NOTE: This target requires a bunch of things: binaries must be built and
-# residing in 'build/tools' etc. AND installed on the system. Also, the find
+# residing in 'builddir/tools' etc. AND installed on the system. Also, the find
 # command has only been tried with GNU find
 #
 .PHONY: gen-man-pages
 gen-man-pages:
 	@echo "## xNVMe: make gen-man-pages"
-	$(eval TOOLS := $(shell find build/tools build/examples build/tests -not -name "xnvme_single*" -not -name "xnvme_enum" -not -name "xnvme_dev" -not -name "*.so" -type f -executable -exec basename {} \;))
+	$(eval TOOLS := $(shell find builddir/tools builddir/examples builddir/tests -not -name "xnvme_single*" -not -name "xnvme_enum" -not -name "xnvme_dev" -not -name "*.so" -type f -executable -exec basename {} \;))
 	python3 ./scripts/xnvmec_generator.py man --tools ${TOOLS} --output man/
 
 #
@@ -184,13 +191,13 @@ gen-man-pages:
 .PHONY: tags
 tags:
 	@echo "## xNVMe: make tags"
-	@$(CTAGS) * --languages=C -h=".c.h" -R --exclude=build \
+	@$(CTAGS) * --languages=C -h=".c.h" -R --exclude=builddir \
 		include \
 		src \
 		tools \
 		examples \
 		tests \
-		third-party/* \
+		subprojects/* \
 		|| true
 
 .PHONY: tags-xnvme-public
@@ -203,9 +210,10 @@ tags-xnvme-public:
 # untracked stuff lying around
 #
 .PHONY: clobber
-clobber: third-party-clobber clean
+clobber: clean
 	@git clean -dfx
 	@git clean -dfX
 	@git checkout .
-
-include third-party/third-party.mk
+	@rm -rf subprojects/fio || true
+	@rm -rf subprojects/spdk || true
+	@rm -rf subprojects/liburing || true

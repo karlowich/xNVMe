@@ -1,0 +1,15 @@
+option('with-liburing', type: 'boolean', value: true)
+option('with-libaio', type: 'boolean', value: true)
+option('with-spdk', type: 'boolean', value: true)
+
+option('enable-async-emu', type: 'boolean', value: true)
+option('enable-async-thrpool', type: 'boolean', value: true)
+
+option('enable-examples', type: 'boolean', value: true)
+option('enable-tests', type: 'boolean', value: true)
+option('enable-tools', type: 'boolean', value: true)
+option('enable-fio-io-engine', type: 'boolean', value: true)
+
+option('enable-bundling', type: 'boolean', value: true)
+
+option('enable-ysnp', type: 'boolean', value: true)

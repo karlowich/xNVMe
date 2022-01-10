@@ -1,0 +1,121 @@
+xnvmelib_source = [
+  'xnvme_3p.c',
+  'xnvme_3p_ver.c',
+  'xnvme_adm.c',
+  'xnvme_be.c',
+  'xnvme_be_fbsd.c',
+  'xnvme_be_fbsd_dev.c',
+  'xnvme_be_fbsd_nvme.c',
+  'xnvme_be_linux.c',
+  'xnvme_be_linux_async_libaio.c',
+  'xnvme_be_linux_async_liburing.c',
+  'xnvme_be_linux_async_ucmd.c',
+  'xnvme_be_linux_block.c',
+  'xnvme_be_linux_dev.c',
+  'xnvme_be_linux_nvme.c',
+  'xnvme_be_nosys.c',
+  'xnvme_be_posix.c',
+  'xnvme_be_posix_admin.c',
+  'xnvme_be_posix_async_aio.c',
+  'xnvme_be_posix_async_emu.c',
+  'xnvme_be_posix_async_nil.c',
+  'xnvme_be_posix_async_thrpool.c',
+  'xnvme_be_posix_dev.c',
+  'xnvme_be_posix_mem.c',
+  'xnvme_be_posix_sync.c',
+  'xnvme_be_spdk.c',
+  'xnvme_be_spdk_admin.c',
+  'xnvme_be_spdk_async.c',
+  'xnvme_be_spdk_dev.c',
+  'xnvme_be_spdk_mem.c',
+  'xnvme_be_spdk_sync.c',
+  'xnvme_be_windows.c',
+  'xnvme_be_windows_async_iocp.c',
+  'xnvme_be_windows_async_iocp_th.c',
+  'xnvme_be_windows_dev.c',
+  'xnvme_be_windows_fs.c',
+  'xnvme_be_windows_mem.c',
+  'xnvme_be_windows_nvme.c',
+  'xnvme_buf.c',
+  'xnvme_cmd.c',
+  'xnvme_dev.c',
+  'xnvme_file.c',
+  'xnvme_geo.c',
+  'xnvme_lba.c',
+  'xnvme_nvm.c',
+  'xnvme_queue.c',
+  'xnvme_req.c',
+  'xnvme_sgl.c',
+  'xnvme_spec.c',
+  'xnvme_spec_pp.c',
+  'xnvme_ver.c',
+  'xnvme_znd.c',
+  'xnvmec.c'
+]
+
+xnvmelib_deps_shared = [
+  thread_dep,
+  rt_dep,
+  math_dep,
+  numa_dep,
+  uuid_dep,
+  aio_dep,
+]
+xnvmelib_deps_static = [
+  uring_dep,
+  spdk_dep.as_link_whole(),
+]
+
+xnvmelib_deps = xnvmelib_deps_shared + xnvmelib_deps_static
+
+xnvmelib_deps_bundle = [
+  uring_dep,
+  spdk_dep
+]
+
+xnvmelib_shared = shared_library(
+  'xnvme',
+  xnvmelib_source,
+  dependencies: xnvmelib_deps,
+  include_directories: [conf_inc, xnvme_inc],
+  install: true,
+)
+
+xnvmelib_static = static_library(
+  'xnvme-static',
+  xnvmelib_source,
+  dependencies: xnvmelib_deps,
+  include_directories: [conf_inc, xnvme_inc],
+  install: true,
+)
+
+# Produce a static library containing xNVMe, liburing, and SPDK
+bundle_lib_paths = []
+bundle_lib_paths += [ 'src' / 'libxnvme-static.a' ]
+foreach blib : xnvmelib_deps_bundle
+  bundle_lib_paths += blib.get_variable(internal: 'lib_paths').split(' ')
+endforeach
+
+# missing xnvme and liburing, howto find / produce absolute paths to these?
+xnvmelib_bundle = custom_target(
+  'xnvme-bundle',
+  build_by_default: true,
+  depends: xnvmelib_static,
+  command: [
+    '@SOURCE_ROOT@' / 'scripts' / 'bundle.py', '--output', '@OUTPUT@', '--libs'
+  ] + bundle_lib_paths,
+  output: 'libxnvme.a',
+  install_dir: get_option('libdir'),
+  install: true,
+)
+
+# We create this as a target to be consumed by pkgconfig, potentially also for the xnvme-cli-tools,
+# although they currently link "directly" to the regular static library
+xnvmelib_bundle_dep = declare_dependency(
+  dependencies: xnvmelib_deps_shared,
+  link_args: [
+    '-Wl,--whole-archive', '-Wl,--no-as-needed',
+    '-lxnvme',
+    '-Wl,--no-whole-archive', '-Wl,--as-needed'
+  ]
+)
