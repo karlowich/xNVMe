@@ -1,0 +1,18 @@
+option('with-liburing', type: 'boolean', value: true)
+option('with-libaio', type: 'boolean', value: true)
+option('with-spdk', type: 'boolean', value: true)
+option('with-fio', type: 'boolean', value: true)
+
+option('async_emu', type: 'boolean', value: true)
+option('async_thrpool', type: 'boolean', value: true)
+
+option('examples', type: 'boolean', value: true)
+option('tests', type: 'boolean', value: true)
+option('tools', type: 'boolean', value: true)
+
+# Providing this as there are linker-issues with gcc < 8
+option('shared_library', type: 'boolean', value: true)
+
+option('build_subprojects', type : 'boolean', value : true, yield : true)
+
+option('enable-ysnp', type: 'boolean', value: true)

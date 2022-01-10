@@ -11,4 +11,5 @@ nasm
 python3
 python3-pip
 uuid-dev
+unzip
 wget

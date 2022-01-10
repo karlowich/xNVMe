@@ -6,7 +6,7 @@ on:
     branches:
       - master
       - dev
-      - build_test
+      - build_test_win
     tags:
       - v*
 
@@ -36,15 +36,14 @@ jobs:
 
     - name: Generate Full Source Archive
       run: |
-        pip install git-archive-all
-        make gen-src-archive
-
+        pip3 install meson ninja
+        make clobber gen-src-archive
 
     - name: Upload source archive
       uses: actions/upload-artifact@v2
       with:
         name: archive-src
-        path: build/*.src.tar.gz
+        path: builddir/meson-dist/*.src.tar.gz
 
   # Build the source-archive on Windows
   windows-build:

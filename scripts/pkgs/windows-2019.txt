@@ -2,7 +2,6 @@
 choco
 # via Chocolatey
 msys2
-cmake
 # Via msys2-shell / pacman
 make
 mingw-w64-x86_64-toolchain
