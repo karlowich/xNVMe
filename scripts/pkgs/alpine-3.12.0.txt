@@ -1,7 +1,6 @@
 bash
 bsd-compat-headers
 build-base
-cmake
 coreutils
 gawk
 git

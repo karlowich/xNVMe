@@ -31,24 +31,14 @@ Building xNVMe
 
 .. include:: clone.rst
 
-Then build and install xNVMe in one of the three following ways, depending on
-your operating system and distribution.
+Regardless of whether you are on Linux, FreeBSD or Windows, then the build is
+done in the same way:
 
-**1)** On Linux, with a distribution supporting ``.deb`` package installation
-via ``dpkg``, do:
+.. include:: build_meson.rst
 
-.. include:: build_linux.rst
-
-**2)** On FreeBSD or a Linux distribution without ``dpkg``, do:
-
-.. include:: build_freebsd.rst
-
-**3)** On Windows, do:
-
-.. include:: build_windows.rst
-
-In case you are seeing build errors, then jump to the
-:ref:`sec-building-toolchain` section describing packages to install on
+However, the installation of the required toolchain and libraries depend on
+operating system and distribution. In case you see build errors, then jump to
+the :ref:`sec-building-toolchain` section describing packages to install on
 different Linux distributions, FreeBSD and Windows.
 
 There you will also find notes on customizing the toolchain and
@@ -61,17 +51,21 @@ Toolchain
 =========
 
 The toolchain (compiler, archiver, and linker) used for building **xNVMe**
-must support **C11**, **pthreads** and on the system the following libraries
-and tools must be available:
+must support **C11**, **pthreads** and on the system the following tools must
+be available:
 
-* CMake (>= 3.9, For **xNVMe**)
+* Python (>=3.7)
+* meson (>=0.61)
+* ninja (>=)
+* make (gmake)
+* gcc/mingw/clang
+
+Along with libraries:
+
 * glibc (>= 2.28, for **io_uring/liburing**)
 * libaio-dev (>=0.3, For **xNVMe** and **SPDK**)
 * libnuma-dev (>=2, For **SPDK**)
 * libssl-dev (>=1.1, For **SPDK**)
-* make (gmake)
-* meson (>=0.48, for **SPDK**)
-* ninja (>=, for **SPDK**)
 * uuid-dev (>=2.3, For **SPDK**)
 
 The preferred toolchain is **gcc** and the following sections describe how to
@@ -141,6 +135,9 @@ For example, from the root of the **xNVMe** source repository, do:
 Debian 9 (Stretch)
 ------------------
 
+.. note: Debian 9 / stretch is EOL, LTS support is available EOL June 2022.
+   After this date xNVMe will stop supporting it.
+
 Install the following packages via ``apt-get``:
 
 .. literalinclude:: ../../scripts/pkgs/debian-stretch.txt
@@ -185,6 +182,21 @@ For example, from the root of the **xNVMe** source repository, do:
 .. note:: In case you get: ``error adding symbols: DSO missing from command
    line``, during compilation, then add ``-ltinfo -lnurces`` to ``LDFLAGS``.
    For example: ``export LDFLAGS=-ltinfo -lncurses"``.
+
+Ubuntu 21.10 (Impish)
+---------------------
+
+Install the following packages via ``apt-get``:
+
+.. literalinclude:: ../../scripts/pkgs/ubuntu-focal.txt
+   :language: bash
+
+For example, from the root of the **xNVMe** source repository, do:
+
+.. literalinclude:: ../../scripts/pkgs/ubuntu-focal.sh
+   :language: bash
+   :lines: 17-
+
 
 Ubuntu 20.04 (Focal)
 --------------------
@@ -256,7 +268,23 @@ compatible with fio, thus when using MSVC, then the xNVMe fio IO-engine is not
 usable.
 
 To obtain fio-compatibility, then a gcc-based toolchain is recommended,
-specfically MinGW_. The toolchain,  consists of:
+specfically MinGW_. To conveniently install tools then Chocolatey is
+recommended, for example. Install chocolatey, by invoking the following in an
+elevated (run as Administrator) PowerShell::
+
+  Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
+
+See Chocolatey docs for other means of installation. With chocolatey do::
+
+  choco install \
+    git \
+    make \
+    mingw \
+    clang \
+    python3
+
+  pip3 install meson ninja
+
 
 .. literalinclude:: ../../scripts/pkgs/windows-2019.txt
    :language: bash
