@@ -93,7 +93,10 @@ subdir('scripts')
 thread_dep = dependency('threads')
 
 fio_cfg_h = 'subprojects'/'fio'/'config-host.h'
-fio_dep = dependency('fio', required: get_option('enable-fio-io-engine'))
+fio_dep = dependency(
+  'fio',
+  required: get_option('enable-fio-io-engine') and get_option('build_subprojects')
+)
 
 rt_dep = cc.find_library('rt')
 if not cc.has_function('clock_gettime', prefix: '#include <time.h>', dependencies: rt_dep)
@@ -102,38 +105,43 @@ endif
 
 aio_dep = cc.find_library(
   'aio',
-  required: conf_data.get('XNVME_BE_LINUX_LIBAIO_ENABLED'),
   has_headers: ['libaio.h'],
+  required: conf_data.get('XNVME_BE_LINUX_LIBAIO_ENABLED') and get_option('build_subprojects'),
 )
-
-uring_dep = dependency('uring', required: is_linux and get_option('with-liburing'))
-
+uring_dep = dependency(
+  'uring',
+  required: conf_data.get('XNVME_BE_LINUX_LIBURING_ENABLED') and get_option('build_subprojects'),
+  required: is_linux and get_option('with-liburing')
+)
 math_dep = cc.find_library(
   'm',
-  required: conf_data.get('XNVME_BE_SPDK_ENABLED'),
   has_headers: ['math.h'],
+  required: conf_data.get('XNVME_BE_SPDK_ENABLED') and get_option('build_subprojects'),
 )
 uuid_dep = cc.find_library(
   'uuid',
-  required: conf_data.get('XNVME_BE_SPDK_ENABLED'),
   has_headers: ['uuid/uuid.h'],
+  required: conf_data.get('XNVME_BE_SPDK_ENABLED') and get_option('build_subprojects'),
 )
 numa_dep = cc.find_library(
   'numa',
-  required: is_linux and conf_data.get('XNVME_BE_SPDK_ENABLED'),
   has_headers: ['numaif.h'],
+  required: conf_data.get('XNVME_BE_SPDK_ENABLED') and get_option('build_subprojects') and is_linux,
 )
 execinfo_dep = cc.find_library(
   'execinfo',
-  required: is_freebsd and conf_data.get('XNVME_BE_SPDK_ENABLED'),
   has_headers: ['execinfo.h'],
+  required: conf_data.get('XNVME_BE_SPDK_ENABLED') and get_option('build_subprojects') and is_freebsd,
 )
 elf_dep = cc.find_library(
   'elf',
-  required: is_freebsd and conf_data.get('XNVME_BE_SPDK_ENABLED'),
   has_headers: ['sys/elf_common.h'],
+  required: conf_data.get('XNVME_BE_SPDK_ENABLED') and get_option('build_subprojects') and is_freebsd,
 )
-spdk_dep = dependency('spdk', required: conf_data.get('XNVME_BE_SPDK_ENABLED'))
+spdk_dep = dependency(
+  'spdk',
+  required: conf_data.get('XNVME_BE_SPDK_ENABLED') and get_option('build_subprojects')
+)
 
 # Headers
 subdir('include')
