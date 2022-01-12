@@ -35,7 +35,7 @@ jobs:
 
     - name: Generate Full Source Archive
       run: |
-        pip install git-archive-all
+        sudo ./scripts/pkgs/ubuntu-focal.sh
         make gen-src-archive
 
     - name: Upload source archive

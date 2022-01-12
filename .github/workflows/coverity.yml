@@ -50,7 +50,7 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: archive-src
-        path: builddir/meson-dist/*.zip
+        path: builddir/meson-dist/*
 
   linux-build-coverity:
     runs-on: ubuntu-latest
@@ -71,10 +71,8 @@ jobs:
 
     - name: xNVMe, extract the full-source-archive
       run: |
-        unzip xnvme*.zip
-        rm xnvme*.zip
-        cp -r xnvme-*/. .
-        cp -r mv -r xnvme*/. .
+        tar xzf xnvme*.tar.gz --strip 1
+        rm xnvme*.tar.gz
 
     - name: xNVMe, install build-requirements
       run: |
