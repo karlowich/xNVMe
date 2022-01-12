@@ -36,14 +36,14 @@ jobs:
 
     - name: Generate Full Source Archive
       run: |
-        pip install git-archive-all
+        make
         make gen-src-archive
 
     - name: Upload source archive
       uses: actions/upload-artifact@v2
       with:
         name: archive-src
-        path: build/*.src.tar.gz
+        path: builddir/*.zip
 
   # Build the source-archive on multiple Linux distributions
   linux-build:
@@ -75,8 +75,8 @@ jobs:
     - name: Unpack the full-source-archive
       run: |
         ls
-        tar xzf *.src.tar.gz
-        rm *.src.tar.gz
+        unzip *.zip
+        rm *.zip
         mv xnvme-* xnvme
 
     - name: Install build-requirements
