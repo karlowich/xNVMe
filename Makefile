@@ -57,6 +57,7 @@ GIT = $$( \
 
 # TODO: fix this
 BUILD_DIR?=builddir
+PROJECT_VER?=0.0.27
 
 .PHONY: default
 default: info tags git-setup
@@ -153,9 +154,12 @@ gen-3p-ver:
 gen-src-archive:
 	@echo "## xNVMe: make gen-src-archive"
 	meson setup $(BUILD_DIR) -Dbuild_subprojects=false
-	cd $(BUILD_DIR) && meson dist --include-subprojects --no-tests --formats zip
-	python3 ./scripts/dist_zip_inject.py --archive $(BUILD_DIR)/meson-dist/*.zip --files subprojects/packagefiles
-	#cd $(BUILD_DIR)/meson-dist/ && for zf in *.zip; do sha256sum ${zf} > "${zf}.sha256sum"; done
+	cd $(BUILD_DIR) && meson dist --include-subprojects --formats zip
+	python3 ./scripts/dist_zip_inject.py --archive $(BUILD_DIR)/meson-dist/xnvme-${PROJECT_VER}.zip --files subprojects/packagefiles
+	cd $(BUILD_DIR)/meson-dist/ && unzip xnvme-${PROJECT_VER}.zip
+	cd $(BUILD_DIR)/meson-dist/ && tar -czf xnvme-${PROJECT_VER}.tar.gz xnvme-${PROJECT_VER}
+	cd $(BUILD_DIR)/meson-dist/ && sha256sum xnvme-${PROJECT_VER}.zip > xnvme-${PROJECT_VER}.zip.sha256sum
+	cd $(BUILD_DIR)/meson-dist/ && sha256sum xnvme-${PROJECT_VER}.tar.gz > xnvme-${PROJECT_VER}.tar.gz.sha256sum
 	@echo "## Here: "
 	find $(BUILD_DIR)/meson-dist
 	@echo "## xNVMe: make gen-src-archive [DONE]"
