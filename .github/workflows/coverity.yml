@@ -43,16 +43,14 @@ jobs:
 
     - name: Generate Full Source Archive
       run: |
-        source scripts/pkgs/ubuntu-focal.sh
-        pip3 install meson
-        make config
-        make gen-src-archive
+        sudo ./scripts/pkgs/ubuntu-focal.sh
+        make clobber gen-src-archive
 
     - name: Upload source archive
       uses: actions/upload-artifact@v2
       with:
         name: archive-src
-        path: builddir/*.zip
+        path: builddir/meson-dist/*.zip
 
   linux-build-coverity:
     runs-on: ubuntu-latest
@@ -75,6 +73,8 @@ jobs:
       run: |
         unzip xnvme*.zip
         rm xnvme*.zip
+        cp -r xnvme-*/. .
+        cp -r mv -r xnvme*/. .
 
     - name: xNVMe, install build-requirements
       run: |
