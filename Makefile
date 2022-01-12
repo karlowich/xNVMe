@@ -147,6 +147,7 @@ gen-3p-ver:
 	@echo "## xNVMe: make gen-3p-ver"
 	./scripts/xnvme_3p.py --repos .
 
+
 #
 # Helper-target to produce full-source archive
 #
@@ -154,10 +155,11 @@ gen-3p-ver:
 gen-src-archive:
 	@echo "## xNVMe: make gen-src-archive"
 	meson setup $(BUILD_DIR) -Dbuild_subprojects=false
-	cd $(BUILD_DIR) && meson dist --include-subprojects --formats zip
+	cd $(BUILD_DIR) && meson dist --include-subprojects --no-tests --formats zip
 	python3 ./scripts/dist_zip_inject.py --archive $(BUILD_DIR)/meson-dist/xnvme-${PROJECT_VER}.zip --files subprojects/packagefiles
 	cd $(BUILD_DIR)/meson-dist/ && unzip xnvme-${PROJECT_VER}.zip
 	cd $(BUILD_DIR)/meson-dist/ && tar -czf xnvme-${PROJECT_VER}.tar.gz xnvme-${PROJECT_VER}
+	cd $(BUILD_DIR)/meson-dist/ && rm -rf xnvme-${PROJECT_VER}
 	cd $(BUILD_DIR)/meson-dist/ && sha256sum xnvme-${PROJECT_VER}.zip > xnvme-${PROJECT_VER}.zip.sha256sum
 	cd $(BUILD_DIR)/meson-dist/ && sha256sum xnvme-${PROJECT_VER}.tar.gz > xnvme-${PROJECT_VER}.tar.gz.sha256sum
 	@echo "## Here: "
