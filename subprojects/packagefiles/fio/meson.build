@@ -5,16 +5,16 @@ project(
 )
 fs = import('fs')
 
-if not fs.exists('config-host.h')
+if get_option('build_subprojects') and not fs.exists('config-host.h')
   run_command('./configure', capture: false, check: true)
 endif
-if not fs.exists('fio')
+if get_option('build_subprojects') and not fs.exists('fio')
   run_command('make', capture: false, check: true)
 endif
 
 fio_inc = include_directories('.')
 fio_dep = declare_dependency(
-  link_with: [],
-  include_directories: fio_inc,
+  include_directories: fio_inc
 )
+
 meson.override_dependency('fio', fio_dep)

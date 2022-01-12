@@ -5,26 +5,20 @@ project(
 )
 fs = import('fs')
 
-if not fs.exists('build')
+if get_option('build_subprojects') and not fs.exists('build')
   message('Patching ..')
   run_command('./spdk_patches.sh', capture: false, check: true)
   message('Configuring ..')
   run_command('./spdk_configure.sh', capture: false, check: true)
 endif
-if not fs.exists('build' / 'lib' / 'src' / 'spdk_nvme.a')
+if get_option('build_subprojects') and not fs.exists('build' / 'lib' / 'src' / 'spdk_nvme.a')
   message('Building ..')
   run_command('./spdk_build.sh', capture: false, check: true)
 endif
 
 message('Setting up dependency ..')
-cc = meson.get_compiler('c')
 
-spdk_inc = include_directories(
-  'dpdk' / 'build' / 'include',
-  'build' / 'include'
-)
-
-spdk_libnames = [
+spdk_libnames = get_option('build_subprojects') ? [
   'spdk_nvme',
   'spdk_env_dpdk',
   'spdk_sock',
@@ -35,9 +29,9 @@ spdk_libnames = [
   'spdk_json',
   'spdk_util',
   'spdk_log'
-]
+] : []
 
-dpdk_libnames = [
+dpdk_libnames = get_option('build_subprojects') ? [
   'rte_eal',
   'rte_telemetry',
   'rte_bus_pci',
@@ -45,8 +39,9 @@ dpdk_libnames = [
   'rte_ring',
   'rte_mempool',
   'rte_kvargs'
-]
+] : []
 
+cc = meson.get_compiler('c')
 spdk_paths = []
 spdk_libs = []
 foreach libname : spdk_libnames + dpdk_libnames
@@ -72,6 +67,10 @@ foreach libname : spdk_libnames + dpdk_libnames
   endforeach
 endforeach
 
+spdk_inc = get_option('build_subprojects') ? include_directories(
+  'dpdk' / 'build' / 'include',
+  'build' / 'include'
+) : include_directories('.')
 spdk_link_args = ['-Wl,--whole-archive', '-Wl,--no-as-needed'] + spdk_paths + ['-Wl,--no-whole-archive', '-Wl,--as-needed']
 
 # Construct link_args based on the above
@@ -79,7 +78,7 @@ spdk_dep = declare_dependency(
   dependencies: spdk_libs,
   link_args: spdk_link_args,
   include_directories: spdk_inc,
-  variables: {'lib_paths': ' '.join(spdk_paths)}
+  variables: {'lib_paths': get_option('build_subprojects') ? ' '.join(spdk_paths) : '.'}
 )
 
 meson.override_dependency('spdk', spdk_dep)

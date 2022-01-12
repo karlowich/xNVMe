@@ -12,4 +12,6 @@ option('enable-fio-io-engine', type: 'boolean', value: true)
 
 option('enable-bundling', type: 'boolean', value: true)
 
+option('build_subprojects', type : 'boolean', value : true, yield : true)
+
 option('enable-ysnp', type: 'boolean', value: true)

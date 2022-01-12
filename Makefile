@@ -152,6 +152,7 @@ gen-3p-ver:
 .PHONY: gen-src-archive
 gen-src-archive:
 	@echo "## xNVMe: make gen-src-archive"
+	meson setup $(BUILD_DIR) -Dbuild_subprojects=false
 	cd $(BUILD_DIR) && meson dist --include-subprojects --no-tests --formats zip
 	python3 ./scripts/dist_zip_inject.py --archive $(BUILD_DIR)/meson-dist/*.zip --files subprojects/packagefiles
 	#cd $(BUILD_DIR)/meson-dist/ && for zf in *.zip; do sha256sum ${zf} > "${zf}.sha256sum"; done
