@@ -86,6 +86,8 @@ add_global_arguments(['-include', 'xnvme_config.h'], language: 'c')
 # Scripts
 subdir('scripts')
 
+scripts_bundle = files('scripts'/'bundle.py')
+
 #
 # Third-party dependencies -- this is actually lib-specific... should probably be moved into
 # 'src/meson.build'?
@@ -95,7 +97,7 @@ thread_dep = dependency('threads')
 fio_cfg_h = 'subprojects'/'fio'/'config-host.h'
 fio_dep = dependency(
   'fio',
-  required: get_option('enable-fio-io-engine') and get_option('build_subprojects')
+  required: get_option('enable-fio-io-engine')
 )
 
 rt_dep = cc.find_library('rt')
@@ -106,41 +108,40 @@ endif
 aio_dep = cc.find_library(
   'aio',
   has_headers: ['libaio.h'],
-  required: conf_data.get('XNVME_BE_LINUX_LIBAIO_ENABLED') and get_option('build_subprojects'),
+  required: conf_data.get('XNVME_BE_LINUX_LIBAIO_ENABLED'),
 )
 uring_dep = dependency(
   'uring',
-  required: conf_data.get('XNVME_BE_LINUX_LIBURING_ENABLED') and get_option('build_subprojects'),
-  required: is_linux and get_option('with-liburing')
+  required: conf_data.get('XNVME_BE_LINUX_LIBURING_ENABLED'),
 )
 math_dep = cc.find_library(
   'm',
   has_headers: ['math.h'],
-  required: conf_data.get('XNVME_BE_SPDK_ENABLED') and get_option('build_subprojects'),
+  required: conf_data.get('XNVME_BE_SPDK_ENABLED'),
 )
 uuid_dep = cc.find_library(
   'uuid',
   has_headers: ['uuid/uuid.h'],
-  required: conf_data.get('XNVME_BE_SPDK_ENABLED') and get_option('build_subprojects'),
+  required: conf_data.get('XNVME_BE_SPDK_ENABLED'),
 )
 numa_dep = cc.find_library(
   'numa',
   has_headers: ['numaif.h'],
-  required: conf_data.get('XNVME_BE_SPDK_ENABLED') and get_option('build_subprojects') and is_linux,
+  required: conf_data.get('XNVME_BE_SPDK_ENABLED') and is_linux,
 )
 execinfo_dep = cc.find_library(
   'execinfo',
   has_headers: ['execinfo.h'],
-  required: conf_data.get('XNVME_BE_SPDK_ENABLED') and get_option('build_subprojects') and is_freebsd,
+  required: conf_data.get('XNVME_BE_SPDK_ENABLED') and is_freebsd,
 )
 elf_dep = cc.find_library(
   'elf',
   has_headers: ['sys/elf_common.h'],
-  required: conf_data.get('XNVME_BE_SPDK_ENABLED') and get_option('build_subprojects') and is_freebsd,
+  required: conf_data.get('XNVME_BE_SPDK_ENABLED') and is_freebsd,
 )
 spdk_dep = dependency(
   'spdk',
-  required: conf_data.get('XNVME_BE_SPDK_ENABLED') and get_option('build_subprojects')
+  required: conf_data.get('XNVME_BE_SPDK_ENABLED')
 )
 
 # Headers

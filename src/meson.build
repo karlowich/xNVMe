@@ -63,8 +63,11 @@ xnvmelib_deps_shared = [
 ]
 xnvmelib_deps_static = [
   uring_dep,
-  spdk_dep.as_link_whole(),
 ]
+xnvmelib_deps_static += [spdk_dep]
+#if get_option('build_subprojects')
+#  xnvmelib_deps_static += [spdk_dep.as_link_whole()]
+#endif
 
 xnvmelib_deps = xnvmelib_deps_shared + xnvmelib_deps_static
 
@@ -93,17 +96,19 @@ xnvmelib_static = static_library(
 bundle_lib_paths = []
 bundle_lib_paths += [ 'src' / 'libxnvme-static.a' ]
 foreach blib : xnvmelib_deps_bundle
-  bundle_lib_paths += blib.get_variable(internal: 'lib_paths').split(' ')
+  if get_option('build_subprojects')
+    bundle_lib_paths += blib.get_variable(internal: 'lib_paths').split(' ')
+  endif
 endforeach
 
 # missing xnvme and liburing, howto find / produce absolute paths to these?
+prog_python = import('python').find_installation('python3')
 xnvmelib_bundle = custom_target(
   'xnvme-bundle',
   build_by_default: true,
   depends: xnvmelib_static,
-  command: [
-    '@SOURCE_ROOT@' / 'scripts' / 'bundle.py', '--output', '@OUTPUT@', '--libs'
-  ] + bundle_lib_paths,
+  command: [ prog_python, '@INPUT@', '--output', '@OUTPUT@', '--libs' ] + bundle_lib_paths,
+  input: scripts_bundle,
   output: 'libxnvme.a',
   install_dir: get_option('libdir'),
   install: true,
