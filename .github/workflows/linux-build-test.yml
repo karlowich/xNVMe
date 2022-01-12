@@ -36,14 +36,14 @@ jobs:
 
     - name: Generate Full Source Archive
       run: |
-        make
-        make gen-src-archive
+        sudo ./scripts/pkgs/ubuntu-focal.sh
+        make clobber gen-src-archive
 
     - name: Upload source archive
       uses: actions/upload-artifact@v2
       with:
         name: archive-src
-        path: builddir/*.zip
+        path: builddir/meson-dist/*.tar.gz
 
   # Build the source-archive on multiple Linux distributions
   linux-build:
@@ -74,14 +74,11 @@ jobs:
 
     - name: Unpack the full-source-archive
       run: |
-        ls
-        unzip *.zip
-        rm *.zip
-        mv xnvme-* xnvme
+        tar xzf xnvme*.tar.gz --strip 1
+        rm xnvme*.tar.gz
 
     - name: Install build-requirements
       run: |
-        cd xnvme
         [[ ${{ matrix.container.os }} == *"gentoo"* ]] && emerge-webrsync || true
         [[ ${{ matrix.container.os }} == *"gentoo"* ]] && source scripts/pkgs/gentoo-${{ matrix.container.ver }}.sh || true
         [[ ${{ matrix.container.os }} != *"gentoo"* ]] && source scripts/pkgs/${{ matrix.container.os }}-${{ matrix.container.ver }}.sh || true
@@ -90,7 +87,6 @@ jobs:
     - name: Configure, the build
       run: |
         [[ -f "/opt/rh/devtoolset-8/enable" ]] && source /opt/rh/devtoolset-8/enable || true
-        cd xnvme
         [[ ${{ matrix.container.os }} == *gentoo** ]] && LDFLAGS="-ltinfo -lncurses" make config || true
         [[ ${{ matrix.container.os }} != *gentoo** ]] && make config || true
 
@@ -98,12 +94,11 @@ jobs:
       run: |
         [[ -f "/opt/rh/devtoolset-8/enable" ]] && source /opt/rh/devtoolset-8/enable || true
         cat /proc/cpuinfo
-        cat xnvme/build/compile_commands.json || true
+        cat builddir/compile_commands.json || true
 
     - name: Build!
       run: |
         [[ -f "/opt/rh/devtoolset-8/enable" ]] && source /opt/rh/devtoolset-8/enable || true
-        cd xnvme
         [[ ${{ matrix.container.os }} == *gentoo** ]] && LDFLAGS="-ltinfo -lncurses" make || true
         [[ ${{ matrix.container.os }} != *gentoo** ]] && make || true
 
