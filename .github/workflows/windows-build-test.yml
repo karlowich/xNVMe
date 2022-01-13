@@ -6,7 +6,7 @@ on:
     branches:
       - master
       - dev
-      - build_test_win
+      - ci-build-windows
     tags:
       - v*
 
@@ -63,14 +63,11 @@ jobs:
 
     - name: Unpack the full-source-archive
       run: |
-        ls
-        7z x *.src.tar.gz -so | 7z x -ttar -si -aoa
-        rm *.src.tar.gz
-        mv xnvme-* xnvme
+        tar xzf xnvme*.tar.gz --strip 1
+        rm xnvme*.tar.gz
 
     - name: Install build-requirements
       run: |
-        cd xnvme
         cmd.exe /c "echo %cd%"
         cmd.exe /c "scripts\pkgs\${{ matrix.runner.os }}-${{ matrix.runner.ver }}.bat"
 
@@ -78,7 +75,6 @@ jobs:
 
     - name: Build!
       run: |
-        cd xnvme
         cmd.exe /c "build.bat"
 
     - name: Dump the compile-commands and machine
@@ -111,7 +107,6 @@ jobs:
         set "PATH=%SystemDrive%\tools\msys64;!PATH!"
         set "PATH=%ProgramFiles%\LLVM\bin;!PATH!"
 
-        cd xnvme
         %SH% -c "make install"
 
     - name: Execute xnvme commands

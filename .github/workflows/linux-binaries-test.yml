@@ -6,7 +6,7 @@ on:
     branches:
       - master
       - dev
-      - ci-bintest
+      - ci-bintest-linux
     tags:
       - v*
 
@@ -37,7 +37,7 @@ jobs:
     - name: Generate Full Source Archive
       run: |
         sudo ./scripts/pkgs/ubuntu-focal.sh
-        make gen-src-archive
+        make clobber gen-src-archive
 
     - name: Upload source archive
       uses: actions/upload-artifact@v2
