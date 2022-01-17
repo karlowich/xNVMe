@@ -60,6 +60,7 @@ xnvmelib_deps_shared = [
   numa_dep,
   uuid_dep,
   aio_dep,
+  setupapi_dep
 ]
 
 xnvmelib_deps_static = []

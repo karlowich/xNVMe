@@ -8,8 +8,9 @@ project(
     'warning_level=2',
     'buildtype=release',
     'default_library=both',
-    'b_lto=true',
     'b_staticpic=true'
+# This seems broken on Windows
+#    'b_lto=true',
   ],
   meson_version: '>=0.59'
 )
@@ -39,6 +40,7 @@ add_project_arguments(
 
 prog_python = import('python').find_installation('python3')
 message('Python Version:', prog_python.language_version())
+message('System:', system)
 
 #
 # The project itself
@@ -108,6 +110,18 @@ fio_cfg_h = 'subprojects'/'fio'/'config-host.h'
 fio_dep = dependency(
   'fio',
   required: get_option('with-fio')
+)
+# Fio Windows Posix Headers
+if is_windows and get_option('with-fio')
+    fio_winposix_inc = include_directories('subprojects'/'fio'/'os'/'windows'/'posix'/'include')
+else
+    fio_winposix_inc = include_directories()
+endif
+
+setupapi_dep = cc.find_library(
+  'setupapi',
+  has_headers: ['setupapi.h'],
+  required: conf_data.get('XNVME_BE_WINDOWS_ENABLED'),
 )
 
 rt_dep = cc.find_library(

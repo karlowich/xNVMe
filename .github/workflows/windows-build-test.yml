@@ -63,11 +63,6 @@ jobs:
       with:
         name: archive-src
 
-    - name: Prepare Python
-      uses: actions/setup-python@v2
-      with:
-        python-version: '3.x'
-
     - name: Unpack the full-source-archive
       run: |
         tar xzf xnvme*.tar.gz --strip 1
@@ -75,11 +70,8 @@ jobs:
 
     - name: Install build-requirements
       run: |
-        pip3 install meson ninja
         cmd.exe /c "echo %cd%"
         cmd.exe /c "scripts\pkgs\${{ matrix.runner.os }}-${{ matrix.runner.ver }}.bat"
-
-        [[ ! -f "/usr/bin/python" ]] && ln -s /usr/bin/python3.8 /usr/bin/python || true
 
     - name: Build!
       run: |
@@ -87,46 +79,19 @@ jobs:
 
     - name: Dump the compile-commands and machine
       run: |
-        cat /proc/cpuinfo
-        cat xnvme/build/compile_commands.json
+        cat /proc/cpuinfo || true
+        cat builddir/compile_commands.json || true
 
     - name: Install
       shell: cmd
       run: |
-        @echo off
-        @setlocal enableextensions enabledelayedexpansion
-
-        set CC=clang
-        set TYPE=release
-        set PLATFORM_ID=Windows
-
-        set CXX=%CC%
-        if "%CC%"=="clang" set "CXX=clang++"
-
-        set LD=
-        if "%CC%"=="clang" set LD=lld-link
-
-        set ENV=CC='%CC%' CXX='%CXX%' LD='%LD%' PLATFORM_ID='%PLATFORM_ID%'
-
-        :: set msys2-shell
-        set SH=call msys2_shell -no-start -here -use-full-path -defterm
-
-        set "PATH=%ALLUSERSPROFILE%\chocolatey\bin;!PATH!"
-        set "PATH=%SystemDrive%\tools\msys64;!PATH!"
-        set "PATH=%ProgramFiles%\LLVM\bin;!PATH!"
-
-        %SH% -c "make install"
+        cmd.exe /c "build.bat install"
 
     - name: Execute xnvme commands
       shell: cmd
       run: |
-        @echo off
-        @setlocal enableextensions enabledelayedexpansion
-
-        set "PATH=%ALLUSERSPROFILE%\chocolatey\bin;!PATH!"
         set "PATH=%SystemDrive%\tools\msys64;!PATH!"
-        set "PATH=%ProgramFiles%\LLVM\bin;!PATH!"
-        set "PATH=%SystemDrive%\tools\msys64\usr\local\bin;!PATH!"
+        set "PATH=%SystemDrive%\tools\msys64\mingw64\bin;!PATH!"
 
         xnvme.exe enum
         xnvme.exe library-info
