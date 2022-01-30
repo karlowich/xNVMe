@@ -60,10 +60,10 @@ jobs:
         - { os: 'centos', ver: 'centos7' }
         # no known issues
         - { os: 'debian', ver: 'bullseye' }
-        # no known issues
-        - { os: 'debian', ver: 'stretch' }
         # liburing 2.1 not supported, prevents upgrading subproject
         - { os: 'debian', ver: 'buster' }
+        # no known issues
+        - { os: 'debian', ver: 'stretch' }
         # no known issues
         - { os: 'gentoo/stage3', ver: 'latest' }
         # no known issues
