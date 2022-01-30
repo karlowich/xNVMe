@@ -76,17 +76,17 @@ If you which to use a different toolchain then see the
 :ref:`sec-building-custom-toolchain`, on how to instrument the build-system
 using a compiler other than **gcc**.
 
-Arch Linux 20200306
--------------------
+Arch Linux
+----------
 
 Install the following packages via ``pacman``:
 
-.. literalinclude:: ../../scripts/pkgs/archlinux-20200306.txt
+.. literalinclude:: ../../scripts/pkgs/archlinux-latest.txt
    :language: bash
 
 For example, from the root of the **xNVMe** source repository, do:
 
-.. literalinclude:: ../../scripts/pkgs/archlinux-20200306.sh
+.. literalinclude:: ../../scripts/pkgs/archlinux-latest.sh
    :language: bash
    :lines: 8-
 
@@ -149,18 +149,18 @@ For example, from the root of the **xNVMe** source repository, do:
    :language: bash
    :lines: 17-
 
-Freebsd 12
+Freebsd 13
 ----------
 
 Ensure that you have kernel source in ``/usr/src``, then install the following
 packages via ``pkg``:
 
-.. literalinclude:: ../../scripts/pkgs/freebsd-12.txt
+.. literalinclude:: ../../scripts/pkgs/freebsd-13.txt
    :language: bash
 
 For example, from the root of the **xNVMe** source repository, do:
 
-.. literalinclude:: ../../scripts/pkgs/freebsd-12.sh
+.. literalinclude:: ../../scripts/pkgs/freebsd-13.sh
    :language: bash
    :lines: 8-
 
@@ -245,57 +245,42 @@ For example, from the root of the **xNVMe** source repository, do:
    :language: bash
    :lines: 17-
 
-Alpine Linux 3.11.3
+Alpine Linux
 -------------------
 
 Install the following packages via ``apk``:
 
-.. literalinclude:: ../../scripts/pkgs/alpine-3.12.0.txt
+.. literalinclude:: ../../scripts/pkgs/alpine-latest.txt
    :language: bash
 
 For example, from the root of the **xNVMe** source repository, do:
 
-.. literalinclude:: ../../scripts/pkgs/alpine-3.12.0.sh
+.. literalinclude:: ../../scripts/pkgs/alpine-latest.sh
    :language: bash
    :lines: 8-
 
 Windows
 -------
 
-xNVMe builds **natively** with the MSVC compiler via CMake. However, the
-libraries produced by the MSVC compiler depends on runtimes which are not
-compatible with fio, thus when using MSVC, then the xNVMe fio IO-engine is not
-usable.
+You can build xNVMe with a MSVC toolchain, however, some of the features are
+lost when doing so, such as the xNVMe fio io-engine. Thus, here instructions
+are provided on building xNVMe with the most features available.
 
-To obtain fio-compatibility, then a gcc-based toolchain is recommended,
-specfically MinGW_. To conveniently install tools then Chocolatey is
-recommended, for example. Install chocolatey, by invoking the following in an
-elevated (run as Administrator) PowerShell::
+The toolchain setup is a bit involved, it "bootstraps" by installing the
+Chocolatey package manager by running::
 
   Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
 
-See Chocolatey docs for other means of installation. With chocolatey do::
+Then continues with installing a couple of tools via Chocolatey, then the
+actual compiler toolchain via the msys2. A script stays more than a thousand
+words, so please consult the scripts::
 
-  choco install \
-    git \
-    make \
-    mingw \
-    clang \
-    python3
+  scripts/pkgs/windows-2019.bat
+  scripts/pkgs/windows-2022.bat
 
-  pip3 install meson ninja
+For details.
 
-
-.. literalinclude:: ../../scripts/pkgs/windows-2019.txt
-   :language: bash
-
-Installing it can be done by first installing the Chocolatey_ Windows package
-manager via PowerShell, then install CMake and msys2 via Chocolatey_, lastly
-the actual compiler-toolchain is installed via **pacman** provided by the
-``msys2`` Shell.
-
-A batch-script comes with xNVMe, ``scripts/pkgs/windows-2019.bat``, which does
-what is described above. Invoke the script in an elevated command-prompt
+To utilize the scripts, then invoke the script in an elevated command-prompt
 (``cmd.exe`` as Administrator)::
 
   cd scripts\pkgs
@@ -304,6 +289,7 @@ what is described above. Invoke the script in an elevated command-prompt
 .. note:: in case you see .dll loader-errors, then check that the environment
    variable ``PATH`` contains the various library locations of the the
    toolchain.
+
 
 .. _sec-gs-system-config:
 
