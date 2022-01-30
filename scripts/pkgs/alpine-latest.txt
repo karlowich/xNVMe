@@ -6,12 +6,12 @@ gawk
 git
 libexecinfo-dev
 linux-headers
-meson
-ninja
 make
+meson
 musl-dev
 ncurses
+ninja
 numactl-dev
 python3
-python3-pip
+py3-pip
 util-linux-dev
