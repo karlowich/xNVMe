@@ -55,25 +55,26 @@ jobs:
       matrix:
         container:
         # no known issues
-        - { os: 'archlinux', ver: 'latest' }
+        #- { os: 'archlinux', ver: 'latest' }
         # liburing 2.1 not supported, prevents upgrading subproject
-        - { os: 'centos', ver: 'centos7' }
+        #- { os: 'centos', ver: 'centos7' }
         # no known issues
-        - { os: 'debian', ver: 'bullseye' }
+        #- { os: 'debian', ver: 'bullseye' }
         # liburing 2.1 not supported, prevents upgrading subproject
-        - { os: 'debian', ver: 'buster' }
+        #- { os: 'debian', ver: 'buster' }
         # no known issues
-        - { os: 'debian', ver: 'stretch' }
+        #- { os: 'debian', ver: 'stretch' }
         # no known issues
-        - { os: 'gentoo/stage3', ver: 'latest' }
+        #- { os: 'gentoo/stage3', ver: 'latest' }
         # no known issues
-        - { os: 'ubuntu', ver: 'bionic' }
+        #- { os: 'ubuntu', ver: 'bionic' }
         # no known issues
-        - { os: 'ubuntu', ver: 'focal' }
+        #- { os: 'ubuntu', ver: 'focal' }
+
         # liburing 2.0 not supported, not added as it is not LTS
         #- { os: 'ubuntu', ver: 'impish' }
         ## fails for other reasons
-        #- { os: 'alpine', ver: 'latest' }
+        - { os: 'alpine', ver: 'latest' }
 
     container:
       image: ${{ matrix.container.os }}:${{ matrix.container.ver }}
