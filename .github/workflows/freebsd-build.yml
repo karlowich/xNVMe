@@ -99,6 +99,13 @@ jobs:
         source ${{ steps.cijoe-qemu.outputs.target-env }}
         cij.cmd "gmake"
 
+    - name: CIJOE, build xNVMe dump log on failure
+      if: failure()
+      run: |
+        pushd $(cij_root) && source modules/cijoe.sh && popd
+        source ${{ steps.cijoe-qemu.outputs.target-env }}
+        cij.cmd "cat builddir/meson-logs/meson-log.txt"
+
     - name: CIJOE, instal xNVMe
       run: |
         pushd $(cij_root) && source modules/cijoe.sh && popd
