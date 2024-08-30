@@ -109,7 +109,7 @@ conf_data.set('XNVME_BE_LINUX_LIBAIO_ENABLED', aio_dep.found())
 
 uring_dep = dependency(
   'liburing',
-  version: '>=2.2',
+  version: '>=2.3',
   required: get_option('with-liburing'),
 )
 conf_data.set('XNVME_BE_LINUX_LIBURING_ENABLED', uring_dep.found())
