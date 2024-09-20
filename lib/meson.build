@@ -22,6 +22,7 @@ xnvmelib_source = [
   'xnvme_be_linux_async_ucmd.c',
   'xnvme_be_linux_async_fixed_bufs.c',
   'xnvme_be_linux_async_reg_ring.c',
+  'xnvme_be_linux_async_fixed_bufs_reg_ring.c',
   'xnvme_be_linux_block.c',
   'xnvme_be_linux_dev.c',
   'xnvme_be_linux_hugepage.c',

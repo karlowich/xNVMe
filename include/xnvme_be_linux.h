@@ -82,6 +82,7 @@ extern struct xnvme_be_async g_xnvme_be_linux_async_liburing;
 extern struct xnvme_be_async g_xnvme_be_linux_async_ucmd;
 extern struct xnvme_be_async g_xnvme_be_linux_async_fixed_bufs;
 extern struct xnvme_be_async g_xnvme_be_linux_async_reg_ring;
+extern struct xnvme_be_async g_xnvme_be_linux_async_fixed_bufs_reg_ring;
 
 /**
  * Implementations of the device enumeration and handles
